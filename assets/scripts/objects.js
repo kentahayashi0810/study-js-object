@@ -1,16 +1,11 @@
-// Goal: Add a movie into the list.
-// Get user input of a movie and store it into an object.
-// Store the object to an array.
-// Change the UI, output all the movies stored in the array.
-
-// Get access to the buttons
-const addMovieButton = document.getElementById("add-movie-btn");
-const serchButton = document.getElementById("search-btn");
+const addMovieBtn = document.getElementById("add-movie-btn");
+const searchBtn = document.getElementById("search-btn");
 
 const movies = [];
 
-const renderMovies = () => {
+const renderMovies = (filter = "") => {
   const movieList = document.getElementById("movie-list");
+
   if (movies.length == 0) {
     movieList.classList.remove("visible");
     return;
@@ -20,11 +15,22 @@ const renderMovies = () => {
 
   movieList.innerHTML = "";
 
-  movies.forEach((movie) => {
+  const filteredMovies = !filter
+    ? movies
+    : movies.filter((movie) => movie.info.title.includes(filter));
+
+  for (const movie of filteredMovies) {
     const movieEl = document.createElement("li");
-    movieEl.textContent = movie.info.title;
+    let text = movie.info.title + " - ";
+    for (const key in movie.info) {
+      if (key !== "title") {
+        text = text + `${key}: ${movie.info[key]}`;
+      }
+      movieEl.textContent = text;
+    }
+
     movieList.appendChild(movieEl);
-  });
+  }
 };
 
 const addMovieHandler = () => {
@@ -52,4 +58,10 @@ const addMovieHandler = () => {
   renderMovies();
 };
 
-addMovieButton.addEventListener("click", addMovieHandler);
+const searchMovieHandler = () => {
+  const filterTerm = document.getElementById("filter-title").value;
+  renderMovies(filterTerm);
+};
+
+addMovieBtn.addEventListener("click", addMovieHandler);
+searchBtn.addEventListener("click", searchMovieHandler);
